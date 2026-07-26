@@ -1,0 +1,5 @@
+.DS_Store
+.playwright-cli/
+leaseboard
+web/node_modules/
+web/*.tsbuildinfo

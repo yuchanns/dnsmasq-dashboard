@@ -1,0 +1,31 @@
+services:
+  leaseboard:
+    image: ${LEASEBOARD_IMAGE:-ghcr.io/yuchanns/dnsmasq-dashboard:latest}
+    container_name: leaseboard
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      LISTEN_ADDRESS: 0.0.0.0:31080
+      LEASE_FILE: /host-tmp/dhcp.leases
+      NETWORK_INTERFACE: enp1s0
+      IP_COMMAND: /sbin/ip
+      NETWORK_NAME: Gateway LAN
+      POOL_START: 10.9.60.100
+      POOL_END: 10.9.60.249
+      POLL_INTERVAL_SECONDS: 2
+      TZ: Asia/Shanghai
+    volumes:
+      - /tmp:/host-tmp:ro
+    read_only: true
+    tmpfs:
+      - /tmp:size=1m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1:31080/api/v1/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
